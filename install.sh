@@ -1,10 +1,85 @@
 #!/bin/bash
 
+sudo apt-get update
+
+# LDAP yüklenmesi
+sudo apt-get install -y debconf-utils
+echo "slapd slapd/internal/generated_adminpw password password" | sudo debconf-set-selections
+echo "slapd slapd/internal/adminpw password password" | sudo debconf-set-selections
+echo "slapd slapd/password2 password password" | sudo debconf-set-selections
+echo "slapd slapd/password1 password password" | sudo debconf-set-selections
+echo "slapd slapd/domain string gazi.edu.tr" | sudo debconf-set-selections
+echo "slapd shared/organization string Gazi" | sudo debconf-set-selections
+echo "slapd slapd/backend string MDB" | sudo debconf-set-selections
+echo "slapd slapd/purge_database boolean true" | sudo debconf-set-selections
+echo "slapd slapd/move_old_database boolean true" | sudo debconf-set-selections
+echo "slapd slapd/allow_ldap_v2 boolean false" | sudo debconf-set-selections
+echo "slapd slapd/no_configuration boolean false" | sudo debconf-set-selections
+sudo apt-get install -y slapd ldap-utils
+
+# LDAP ayarlanması
+sudo service slapd start
+
+ADMIN_DN="cn=admin,dc=gazi,dc=edu,dc=tr"
+ADMIN_GROUP_DN="cn=admin,ou=groups,dc=gazi,dc=edu,dc=tr"
+ADMIN_PASSWORD="password"
+
+# LDAP yönetici hesabının eklenmesi
+echo -e "dn: $ADMIN_DN\n\
+objectClass: organizationalRole\n\
+cn: admin\n\
+description: LDAP administrator\n" | sudo ldapadd -x -D $ADMIN_DN -w $ADMIN_PASSWORD
+
+# LDAP kullanıcılarının eklenmesi
+USERS=("kaan" "ahmet" "melih" "tarik")
+for USER in "${USERS[@]}"; do
+ USER_DN="cn=$USER,dc=gazi,dc=edu,dc=tr"
+ echo -e "dn: $USER_DN\n\
+objectClass: inetOrgPerson\n\
+objectClass: posixAccount\n\
+cn: $USER\n\
+sn: $USER\n\
+uid: $USER\n\
+uidNumber: 1001\n\
+gidNumber: 1001\n\
+userPassword: $(slappasswd -s $USER)\n\
+homeDirectory: /home/$USER\n" | sudo ldapadd -x -D $ADMIN_DN -w $ADMIN_PASSWORD
+done
+
+# LDAP organizationalUnit nesnesini oluşturun
+echo -e "dn: ou=groups,dc=gazi,dc=edu,dc=tr\n\
+objectClass: top\n\
+objectClass: organizationalUnit\n\
+ou: groups\n" | sudo ldapadd -x -D $ADMIN_DN -w $ADMIN_PASSWORD
+
+# LDAP groupOfNames nesnesini oluşturun
+echo -e "dn: $ADMIN_GROUP_DN\n\
+objectClass: top\n\
+objectClass: groupOfNames\n\
+cn: admin\n\
+member: $ADMIN_DN\n" | sudo ldapadd -x -D $ADMIN_DN -w $ADMIN_PASSWORD
+
+echo -e "dn: $ACCESS_CONTROL_DN\n\
+changetype: modify\n\
+add: olcAccess\n\
+olcAccess: {0}to * by dn.base=\"$ADMIN_GROUP_DN\" manage by * break\n" | sudo ldapmodify -Y EXTERNAL -H ldapi:///
+
+# LDAP kullanıcılarına admin yetkisi verilmesi
+for USER in "${USERS[@]}"; do
+ USER_DN="cn=$USER,dc=gazi,dc=edu,dc=tr"
+ echo -e "dn: $ADMIN_GROUP_DN\n\
+changetype: modify\n\
+add: member\n\
+member: $USER_DN\n" | sudo ldapmodify -x -D $ADMIN_DN -w $ADMIN_PASSWORD
+done
+
+# LDAP servisinin tekrar başlatılması
+sudo service slapd restart
+
 # Projenin bulunduğu dizin
 cd flask_app
 
 # Flask ve Gunicorn yükle
-sudo apt-get update
 sudo apt-get install -y python3-pip
 pip3 install Flask gunicorn
 
