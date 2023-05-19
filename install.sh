@@ -79,9 +79,12 @@ sudo service slapd restart
 # Projenin bulunduğu dizin
 cd flask_app
 
-# Flask ve Gunicorn yükle
+# Pip kurulması
 sudo apt-get install -y python3-pip
-pip3 install Flask gunicorn
+
+# Python uygulaması için gerekli bağımlılıkların indirilmesi
+sudo apt-get install -y libsasl2-dev libldap2-dev libssl-dev
+pip3 install -r requirements.txt
 
 # Nginx yükle
 sudo apt-get install -y nginx
