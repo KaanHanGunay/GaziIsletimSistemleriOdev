@@ -6,7 +6,9 @@ Gazi Üniversitesi İşletim Sistemleri ödevi için Ubuntu işletim sistemine g
 
 ### İçerik
 
-- Postgresql
-- LDAP
-- Python
-- Nginx
+- Postgresql (Zorunlu Stack)
+- Nginx (Zorunlu Stack)
+- Python (Zorunlu Stack)
+- LDAP (Zorunlu Yüklenecek)
+- SSH (Zorunlu Yüklenecek)
+- Shell Script (Seçimli Yüklenecek)

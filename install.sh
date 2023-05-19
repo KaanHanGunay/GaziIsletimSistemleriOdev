@@ -132,3 +132,7 @@ gunicorn --daemon --workers 1 --bind unix:/run/gunicorn.sock -m 007 app:app
 sudo chown www-data:www-data /run/gunicorn.sock
 sudo chmod 660 /run/gunicorn.sock
 sudo service nginx restart
+
+# SSH kurulu ve başlatılması
+sudo apt-get install -y openssh-server
+sudo service ssh start
