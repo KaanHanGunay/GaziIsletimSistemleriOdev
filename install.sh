@@ -1,6 +1,29 @@
 #!/bin/bash
 
+# Sistemi güncelleme
 sudo apt-get update
+
+# Kurulumların interaktif olmaması ayarı
+export DEBIAN_FRONTEND=noninteractive
+
+# Timezone ayarı
+echo "Europe/Istanbul" > /etc/timezone
+dpkg-reconfigure -f noninteractive tzdata
+
+# Postgresql yükleme
+echo "deb http://apt.postgresql.org/pub/repos/apt/ `lsb_release -cs`-pgdg main" > /etc/apt/sources.list.d/pgdg.list
+wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add -
+apt-get update
+apt-get -y install postgresql
+
+# Postgresql servisini başlatma
+service postgresql start
+
+# Postgresql'e kullanıcı ve tablo oluşturulması. Gerekli yetkilerin tanımlanması
+sudo -u postgres psql -c "CREATE USER admin WITH PASSWORD 'admin';"
+sudo -u postgres psql -d postgres -c "create table log(id serial primary key, username varchar(50), login_time timestamp);"
+sudo -u postgres psql -d postgres -c "GRANT ALL PRIVILEGES ON TABLE log TO admin;"
+sudo -u postgres psql -d postgres -c "GRANT ALL PRIVILEGES ON SEQUENCE log_id_seq TO admin;"
 
 # LDAP yüklenmesi
 sudo apt-get install -y debconf-utils

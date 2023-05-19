@@ -1,3 +1,5 @@
 Flask
 gunicorn
 flask-simpleldap
+psycopg2-binary
+flask_sqlalchemy
