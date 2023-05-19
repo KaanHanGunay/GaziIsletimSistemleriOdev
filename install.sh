@@ -10,6 +10,10 @@ export DEBIAN_FRONTEND=noninteractive
 echo "Europe/Istanbul" > /etc/timezone
 dpkg-reconfigure -f noninteractive tzdata
 
+# syslog-ng kurulumu ve başlatılması
+apt-get install -y syslog-ng-core
+service syslog-ng start
+
 # Postgresql yükleme
 echo "deb http://apt.postgresql.org/pub/repos/apt/ `lsb_release -cs`-pgdg main" > /etc/apt/sources.list.d/pgdg.list
 wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add -

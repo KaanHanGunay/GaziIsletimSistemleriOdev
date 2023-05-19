@@ -12,3 +12,4 @@ Gazi Üniversitesi İşletim Sistemleri ödevi için Ubuntu işletim sistemine g
 - LDAP (Zorunlu Yüklenecek)
 - SSH (Zorunlu Yüklenecek)
 - Shell Script (Seçimli Yüklenecek)
+- Syslog-ng (Seçimli Yüklenecek)
