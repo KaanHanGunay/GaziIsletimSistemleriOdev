@@ -140,3 +140,48 @@ sudo service nginx restart
 # SSH kurulu ve başlatılması
 sudo apt-get install -y openssh-server
 sudo service ssh start
+
+# Nagios için gerekli araçları ve bağımlılıkları yükleme
+sudo apt-get install -y autoconf gcc libc6 make wget unzip apache2 php libapache2-mod-php libgd-dev
+
+# /tmp dizinine Nagios'u indirme
+cd /tmp
+wget --no-check-certificate https://github.com/NagiosEnterprises/nagioscore/releases/download/nagios-4.4.6/nagios-4.4.6.tar.gz
+tar xzf nagios-4.4.6.tar.gz
+cd /tmp/nagios-4.4.6/
+
+# Nagios'u derleme ve yükleme
+sudo ./configure --with-httpd-conf=/etc/apache2/sites-enabled
+sudo make all
+sudo make install-groups-users
+sudo usermod -a -G nagios www-data
+sudo make install
+sudo make install-daemoninit
+sudo make install-commandmode
+sudo make install-config
+sudo make install-webconf
+sudo a2enmod rewrite
+sudo a2enmod cgi
+
+echo "AcceptFilter http none" | sudo tee -a /etc/apache2/apache2.conf
+echo "AcceptFilter https none" | sudo tee -a /etc/apache2/apache2.conf
+
+sudo sed -i 's/Listen 80/Listen 8080/g' /etc/apache2/ports.conf
+
+# Apache'yi yeniden başlatma
+sudo service apache2 restart 
+
+# Nagios web arayüzü için kullanıcı oluşturma ve parolayı otomatik olarak ayarlama
+echo "nagiosadmin:$(openssl passwd -apr1 password)" | sudo tee -a /usr/local/nagios/etc/htpasswd.users
+
+# Nagios eklentilerini indirip ve yükleme
+cd /tmp
+wget --no-check-certificate https://nagios-plugins.org/download/nagios-plugins-2.3.3.tar.gz
+tar xzf nagios-plugins-2.3.3.tar.gz
+cd /tmp/nagios-plugins-2.3.3/
+sudo ./configure --with-nagios-user=nagios --with-nagios-group=nagios --with-openssl
+sudo make
+sudo make install
+
+# Nagios'u başlatma
+sudo service nagios start 
