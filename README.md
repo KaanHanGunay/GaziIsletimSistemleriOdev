@@ -15,7 +15,7 @@ Gazi Üniversitesi İşletim Sistemleri ödevi için Ubuntu işletim sistemine g
 - Syslog-ng (Seçimli Yüklenecek)
 - Nagios (Seçimli Yüklenecek)
 
-### Test edilmes
+### Test edilmesi
 
 - [*http://localhost/*](http://localhost/) adresi üzerinden Nginx reverse proxy ile Flask uygulamasına ulaşılabilir. Tüm ekip
 arkadaşlarının ismi ve ismiyle aynı şifresi ile giriş yapılabilir.
