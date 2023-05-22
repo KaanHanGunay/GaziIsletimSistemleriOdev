@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Hata alındığında komutları işletmeyi durdurur
+set -e
+
 # Sistemi güncelleme
 sudo apt-get update
 
@@ -15,8 +18,7 @@ apt-get install -y syslog-ng-core
 service syslog-ng start
 
 # Postgresql yükleme
-echo "deb http://apt.postgresql.org/pub/repos/apt/ `lsb_release -cs`-pgdg main" > /etc/apt/sources.list.d/pgdg.list
-wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add -
+curl -sS -k https://www.postgresql.org/media/keys/ACCC4CF8.asc | gpg --dearmor | sudo tee /etc/apt/trusted.gpg.d/postgresql.gpg > /dev/null
 apt-get update
 apt-get -y install postgresql
 
@@ -85,11 +87,6 @@ objectClass: top\n\
 objectClass: groupOfNames\n\
 cn: admin\n\
 member: $ADMIN_DN\n" | sudo ldapadd -x -D $ADMIN_DN -w $ADMIN_PASSWORD
-
-echo -e "dn: $ACCESS_CONTROL_DN\n\
-changetype: modify\n\
-add: olcAccess\n\
-olcAccess: {0}to * by dn.base=\"$ADMIN_GROUP_DN\" manage by * break\n" | sudo ldapmodify -Y EXTERNAL -H ldapi:///
 
 # LDAP kullanıcılarına admin yetkisi verilmesi
 for USER in "${USERS[@]}"; do

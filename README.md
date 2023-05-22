@@ -27,7 +27,7 @@ ile ulaşılanilir.
 - Sunucuya ssh bağlantısı için `ssh kaan@localhost` kodu ile khg şifresi ile ulaşılabilir.
 - Syslog-ng ile yakalanan sistem loglarına ulaşmak içn `cat /var/log/messages` komutu ile ulaşılabilir.
 
-### Çalıştırılması
+### Çalıştırılması
 
 ```bash
 git clone https://github.com/KaanHanGunay/GaziIsletimSistemleriOdev
