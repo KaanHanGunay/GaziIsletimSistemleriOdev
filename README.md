@@ -21,7 +21,7 @@ Gazi Üniversitesi İşletim Sistemleri ödevi için Ubuntu işletim sistemine g
 arkadaşlarının ismi ve ismiyle aynı şifresi ile giriş yapılabilir.
 - Girişler LDAP üzerinden kontrol edilmektedir.
 - Veritabanı kontrol etmek için `sudo -u postgres psql -d postgres -c "SELECT * FROM LOG;"` komutu kullanılabilir. Veriler *LOG*
-tablosunda tutulamktadır.
+tablosunda tutulmaktadır.
 - Nagios'a [*http://localhost:8080/nagios/*](http://localhost:8080/nagios/) adresi üzerinden kullanıcı adı nagiosadmin şifre password
 ile ulaşılanilir.
 - Sunucuya ssh bağlantısı için `ssh kullanici_adi@localhost` kodu ile kullanıcı şifresi girilerek ulaşılabilir.
