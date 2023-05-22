@@ -20,11 +20,11 @@ Gazi Üniversitesi İşletim Sistemleri ödevi için Ubuntu işletim sistemine g
 - [*http://localhost/*](http://localhost/) adresi üzerinden Nginx reverse proxy ile Flask uygulamasına ulaşılabilir. Tüm ekip
 arkadaşlarının ismi ve ismiyle aynı şifresi ile giriş yapılabilir.
 - Girişler LDAP üzerinden kontrol edilmektedir.
-- Veritabanı için [**jdbc:postgresql://localhost:5432/postgres**](jdbc:postgresql://localhost:5432/postgres) üzerinden PostgreSQL
-veritabanına kullanıcı adı admin, şifre admin olacak şekilde ulaşılabilir. Tüm kullanıcı girişleri *LOG* tablosunda loglanmaktadır.
+- Veritabanı kontrol etmek için `sudo -u postgres psql -d postgres -c "SELECT * FROM LOG;"` komutu kullanılabilir. Veriler *LOG*
+tablosunda tutulamktadır.
 - Nagios'a [*http://localhost:8080/nagios/*](http://localhost:8080/nagios/) adresi üzerinden kullanıcı adı nagiosadmin şifre password
 ile ulaşılanilir.
-- Sunucuya ssh bağlantısı için `ssh kaan@localhost` kodu ile khg şifresi ile ulaşılabilir.
+- Sunucuya ssh bağlantısı için `ssh kullanici_adi@localhost` kodu ile kullanıcı şifresi girilerek ulaşılabilir.
 - Syslog-ng ile yakalanan sistem loglarına ulaşmak içn `cat /var/log/messages` komutu ile ulaşılabilir.
 
 ### Çalıştırılması

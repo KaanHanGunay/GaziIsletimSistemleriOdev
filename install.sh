@@ -110,6 +110,9 @@ sudo apt-get install -y python3-pip
 sudo apt-get install -y libsasl2-dev libldap2-dev libssl-dev
 pip3 install -r requirements.txt
 
+# Gunicorn ile uygulananın çalıştırılması
+gunicorn --daemon --workers 1 --bind unix:/run/gunicorn.sock -m 007 app:app
+
 # Nginx yükle
 sudo apt-get install -y nginx
 
@@ -125,9 +128,6 @@ echo "server {
     }
 }" | sudo tee /etc/nginx/sites-available/flask_app
 sudo ln -s /etc/nginx/sites-available/flask_app /etc/nginx/sites-enabled
-
-# Gunicorn ile uygulananın çalıştırılması
-gunicorn --daemon --workers 1 --bind unix:/run/gunicorn.sock -m 007 app:app
 
 # Nginx uygulamasının gunicorn uygualamsına ulaşması için gerekli ayarlar
 sudo chown www-data:www-data /run/gunicorn.sock
