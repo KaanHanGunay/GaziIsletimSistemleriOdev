@@ -110,8 +110,28 @@ sudo apt-get install -y python3-pip
 sudo apt-get install -y libsasl2-dev libldap2-dev libssl-dev
 pip3 install -r requirements.txt
 
-# Gunicorn ile uygulananın çalıştırılması
-gunicorn --daemon --workers 1 --bind unix:/run/gunicorn.sock -m 007 app:app
+# Gunicronu service olarak ekleme
+FLASK_APP_DIR=$(pwd)/flask_app
+sudo bash -c 'cat > /etc/systemd/system/gunicorn.service << EOF
+[Unit]
+Description=gunicorn daemon
+After=network.target
+
+[Service]
+User=www-data
+Group=www-data
+WorkingDirectory='$FLASK_APP_DIR'
+ExecStart=/usr/local/bin/gunicorn --workers 1 --bind unix:/run/gunicorn.sock -m 007 app:app
+
+[Install]
+WantedBy=multi-user.target
+EOF'
+
+# systemd daemon'un yeniden yüklenmesi
+sudo systemctl daemon-reload
+
+# Gunicorn servisinin başlatılması
+sudo systemctl start gunicorn
 
 # Nginx yükle
 sudo apt-get install -y nginx
@@ -182,3 +202,17 @@ sudo make install
 
 # Nagios'u başlatma
 sudo service nagios start 
+
+# Tüm service'lerim sistem tekrar başladığında çalışmasını sağlamak için eklenmiştir.
+if command -v systemctl &> /dev/null
+then
+    sudo systemctl enable syslog-ng
+    sudo systemctl enable postgresql
+    sudo systemctl enable slapd
+    sudo systemctl enable nginx
+    sudo systemctl enable ssh
+    sudo systemctl enable nagios
+    sudo systemctl enable apache2
+else
+    echo "systemctl komutu bulunamadı. Servislerin otomatik başlatılması için başka bir yöntem kullanmalısınız."
+fi
