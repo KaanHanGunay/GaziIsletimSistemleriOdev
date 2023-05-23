@@ -111,7 +111,7 @@ sudo apt-get install -y libsasl2-dev libldap2-dev libssl-dev
 pip3 install -r requirements.txt
 
 # Gunicorn ile uygulananın çalıştırılması
-gunicorn --daemon --workers 1 --bind unix:/run/gunicorn.sock -m 007 app:app
+gunicorn --daemon --workers 1 --bind unix:/var/run/gunicorn.sock -m 007 app:app
 
 # Nginx yükle
 sudo apt-get install -y nginx
@@ -124,14 +124,14 @@ echo "server {
 
     location / {
         include proxy_params;
-        proxy_pass http://unix:/run/gunicorn.sock;
+        proxy_pass http://unix:/var/run/gunicorn.sock;
     }
 }" | sudo tee /etc/nginx/sites-available/flask_app
 sudo ln -s /etc/nginx/sites-available/flask_app /etc/nginx/sites-enabled
 
 # Nginx uygulamasının gunicorn uygualamsına ulaşması için gerekli ayarlar
-sudo chown www-data:www-data /run/gunicorn.sock
-sudo chmod 660 /run/gunicorn.sock
+sudo chown www-data:www-data /var/run/gunicorn.sock
+sudo chmod 660 /var/run/gunicorn.sock
 sudo service nginx restart
 
 # SSH kurulu ve başlatılması
